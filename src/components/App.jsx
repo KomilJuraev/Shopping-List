@@ -68,6 +68,8 @@ function App() {
             <p className="TotalPrice" id={"total-price-" + clickedRowId}>0</p>
           </td>
         </tr>
+      const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
+      checkbox.checked = false;
       setItemListRow(tempArr);
       setIsEditClicked(false);
       setCheckedId(false);
@@ -177,20 +179,20 @@ function App() {
   }
 
   function handleChange(event) {
-    const defaultCheckbox = document.getElementById("item-checkbox-" + clickedRowId);
-    if (defaultCheckbox) {
-      defaultCheckbox.checked = false;
-    }
+    // const defaultCheckbox = document.getElementById("item-checkbox-" + clickedRowId);
+    // if (defaultCheckbox) {
+    //   defaultCheckbox.checked = false;
+    // }
     let tempId = event.target.parentNode.parentNode.id;
     tempId = tempId.substring(4);
-    setClickedRowId(tempId);
+    setClickedRowId(parseFloat(tempId));
     setCheckedId(true);
-    const checkbox = document.getElementById("item-checkbox-" + tempId);
-    if (parseFloat(tempId) === rowNumber) {
-      checkbox.checked = true;
-    } else {
-      checkbox.checked = false;
-    }
+    // const checkbox = document.getElementById("item-checkbox-" + tempId);
+    // if (parseFloat(tempId) === rowNumber) {
+    //   checkbox.checked = true;
+    // } else {
+    //   checkbox.checked = false;
+    // }
   }
 
   useEffect(() => {
@@ -213,12 +215,24 @@ function App() {
 
   function handleClear() {
     const tempItemList = [...itemListRow];
-    tempItemList.splice(clickedRowId, 1);
-    setItemListRow(tempItemList);
+    if (tempItemList.length > 1) {
+      tempItemList.splice(clickedRowId - 1, 1);
+      setItemListRow(tempItemList);
+    } else {
+      setItemListRow([]);
+      const tempArr = multipleList;
+      tempArr.splice(pageNumber, 1);
+      setMultipleList(tempArr);
+    }
+    const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
+    checkbox.checked = false;
   }
 
   function handleClearAll(event) {
     setItemListRow([]);
+    const tempArr = [...multipleList];
+    tempArr.splice(pageNumber, 1);
+    setMultipleList(tempArr);
   }
 
   function handleDateInput(event) {
@@ -254,6 +268,13 @@ function App() {
     setIsPreviousButtonDisabled(false);
     setIsNextButtonDisabled(true);
     setIsNewListButtonDisabled(true);
+    const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
+    checkbox.checked = false;
+    setIsEditClicked(false);
+    setCheckedId(false);
+    setItem("");
+    setQuantity("");
+    setUnit("--");
   }
 
   useEffect(() => {
@@ -267,7 +288,7 @@ function App() {
 
   function handlePrevious() {
     let currentPgeNum = pageNumber - 1;
-    setItemListRow([multipleList[currentPgeNum]]);
+    setItemListRow([...multipleList[currentPgeNum]]);
     setRowNumber(itemListRow.length);
     if (currentPgeNum >= 0) {
       setPageNumber(currentPgeNum);
@@ -293,19 +314,24 @@ function App() {
     } else {
       multipleList.splice(pageNumber, 1);
     }
+    const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
+    checkbox.checked = false;
+    setItem("");
+    setQuantity("");
+    setUnit("--");
   }
 
   function handleNext() {
     let currentPgeNum = pageNumber + 1;
 
     if (currentPgeNum === multipleList.length - 1) {
-      setItemListRow([multipleList[currentPgeNum]]);
+      setItemListRow([...multipleList[currentPgeNum]]);
       setRowNumber(itemListRow.length);
       setPageNumber(currentPgeNum);
       setIsNextButtonDisabled(true);
       setIsNewListButtonDisabled(false);
     } else if (currentPgeNum < multipleList.length) {
-      setItemListRow([multipleList[currentPgeNum]]);
+      setItemListRow([...multipleList[currentPgeNum]]);
       setRowNumber(itemListRow.length);
       setPageNumber(currentPgeNum);
       setIsNextButtonDisabled(false);
@@ -327,6 +353,12 @@ function App() {
     } else {
       multipleList.splice(pageNumber, 1);
     }
+
+    const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
+    checkbox.checked = false;
+    setItem("");
+    setQuantity("");
+    setUnit("--");
   }
 
   useEffect(() => {
