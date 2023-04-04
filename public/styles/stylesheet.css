@@ -1,0 +1,79 @@
+body {
+  background-image: url("../images/grocery-store.jpg");
+  background-repeat: no-repeat;
+  background-position: 0% 0%;
+  background-size: 100% 100%;
+}
+
+.main-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+} 
+
+caption {
+  background-color: white;
+}
+
+table, th, td {
+  background-color: white;
+  border: solid;
+  border-width: 1px;
+  border-collapse: collapse;
+  padding: 10px 20px;
+}
+
+.add-container {
+  position: relative;
+}
+
+.add-btn {
+  /* background-color: white; */
+  border: none;
+  height: 30px;
+  width: 30px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 25px;
+}
+
+.add-error-msg {
+  width: 200px;
+  position: absolute;
+  bottom: 25px;
+  left: 30px;
+  background-color: rgb(255, 252, 252);
+  color: red;
+  box-shadow: 2px 3px 10px rgba(0,0,0,0.3);
+  opacity: 0;
+}
+
+.add-container:active .add-error-msg {
+  opacity: 1
+}
+
+.tableName {
+  border-top: solid;
+  border-left: solid;
+  border-right: solid;
+  border-width: 1px;
+}
+
+.number-of-items-input {
+  width: 60px;
+  margin-right: 5px;
+}
+
+.item-name-input {
+  width: 180px;
+}
+
+.footer-btn {
+  margin-right: 20px;
+}
+
+button {
+  cursor: pointer;
+}
