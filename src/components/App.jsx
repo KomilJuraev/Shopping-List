@@ -18,6 +18,7 @@ function App() {
   const [isNewListButtonDisabled, setIsNewListButtonDisabled] = useState(true);
   const [isPreviousButtonDisabled, setIsPreviousButtonDisabled] = useState(true);
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
+  const [isPageRemoved, setIsPageRemoved] = useState(false);
 
   function addNewRow() {
     if ((item !== undefined && item !== "") && (quantity !== undefined && quantity !== "") && (unit !== "--") && (isEditClicked === false)) {
@@ -213,26 +214,43 @@ function App() {
     }
   }
 
+  function removePage() {
+    setItemListRow([]);
+    setIsPageRemoved(true);
+    const tempArray = [...multipleList];
+    tempArray.splice(pageNumber, 1);
+    setMultipleList([...tempArray]);
+    if (tempArray.length - 1 > 0) {
+      if (tempArray.length - 1 > pageNumber) {
+        console.log("We are here");
+      } else if (tempArray.length - 1 === pageNumber) {
+        setPageNumber(pageNumber - 1)
+      } else {
+        setPageNumber(tempArray.length - 1)
+      }
+    } else {
+      setPageNumber(0);
+    }
+  }
+
   function handleClear() {
-    const tempItemList = [...itemListRow];
+    let tempItemList = [...itemListRow];
     if (tempItemList.length > 1) {
       tempItemList.splice(clickedRowId - 1, 1);
       setItemListRow(tempItemList);
     } else {
-      setItemListRow([]);
-      const tempArr = multipleList;
-      tempArr.splice(pageNumber, 1);
-      setMultipleList(tempArr);
+      removePage();
     }
     const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
     checkbox.checked = false;
   }
 
-  function handleClearAll(event) {
-    setItemListRow([]);
-    const tempArr = [...multipleList];
-    tempArr.splice(pageNumber, 1);
-    setMultipleList(tempArr);
+  useEffect(() => {
+    console.log("isPageRemoved ==> " + isPageRemoved);
+  }, [isPageRemoved]);
+
+  function handleClearAll() {
+    removePage();
   }
 
   function handleDateInput(event) {
@@ -248,17 +266,24 @@ function App() {
 
   function handleNewList() {
     let currentPgeNum;
-    currentPgeNum = multipleList.length + 1;
+    if (isPageRemoved === true) {
+      currentPgeNum = multipleList.length;
+      setIsPageRemoved(false);
+    } else {
+      currentPgeNum = multipleList.length + 1;
+    }
 
     if (multipleList.length > 0 && pageNumber !== multipleList.length) {
-      setPageNumber(multipleList.length);
       const tempArray = [...multipleList];
       if (itemListRow.length > 0) {
         tempArray[pageNumber] = itemListRow;
         setMultipleList(tempArray);
-      } else {
-        multipleList.splice(pageNumber, 1);
       }
+      // else {
+      // tempArray.splice(pageNumber, 1);
+      // setMultipleList(tempArray);
+      // }
+      setPageNumber(tempArray.length);
     } else {
       setMultipleList([...multipleList, itemListRow]);
       setPageNumber(currentPgeNum);
@@ -287,7 +312,14 @@ function App() {
   }, [multipleList]);
 
   function handlePrevious() {
-    let currentPgeNum = pageNumber - 1;
+    let currentPgeNum;
+    if (isPageRemoved === true) {
+      currentPgeNum = pageNumber;
+      setIsPageRemoved(false);
+    } else {
+      currentPgeNum = pageNumber - 1;
+    }
+
     setItemListRow([...multipleList[currentPgeNum]]);
     setRowNumber(itemListRow.length);
     if (currentPgeNum >= 0) {
@@ -301,28 +333,45 @@ function App() {
     }
 
     if (currentPgeNum < multipleList.length) {
-      setIsNextButtonDisabled(false);
-      setIsNewListButtonDisabled(false);
-      // setOnLastIndex(false);
+      if (itemListRow.length === 0) {
+        if (currentPgeNum === multipleList.length - 1) {
+          setIsNextButtonDisabled(true);
+          setIsNewListButtonDisabled(false);
+        } else {
+          setIsNextButtonDisabled(false);
+          setIsNewListButtonDisabled(false);
+        }
+      } else {
+        setIsNextButtonDisabled(false);
+        setIsNewListButtonDisabled(false);
+      }
     } else {
       setIsNextButtonDisabled(true);
     }
     const tempArray = [...multipleList];
     if (itemListRow.length > 0) {
       tempArray[pageNumber] = itemListRow;
-      setMultipleList(tempArray);
-    } else {
-      multipleList.splice(pageNumber, 1);
+      setMultipleList([...tempArray]);
     }
-    const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
-    checkbox.checked = false;
     setItem("");
     setQuantity("");
     setUnit("--");
+    setClickedRowId();
+    const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
+    checkbox.checked = false;
   }
 
   function handleNext() {
-    let currentPgeNum = pageNumber + 1;
+    let currentPgeNum;
+    if (isPageRemoved === true) {
+      currentPgeNum = pageNumber;
+      if (pageNumber < multipleList.length - 1) {
+        currentPgeNum++;
+      }
+      setIsPageRemoved(false);
+    } else {
+      currentPgeNum = pageNumber + 1;
+    }
 
     if (currentPgeNum === multipleList.length - 1) {
       setItemListRow([...multipleList[currentPgeNum]]);
@@ -350,15 +399,13 @@ function App() {
     if (itemListRow.length > 0) {
       tempArray[pageNumber] = itemListRow;
       setMultipleList(tempArray);
-    } else {
-      multipleList.splice(pageNumber, 1);
     }
-
-    const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
-    checkbox.checked = false;
     setItem("");
     setQuantity("");
     setUnit("--");
+    setClickedRowId();
+    const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
+    checkbox.checked = false;
   }
 
   useEffect(() => {
