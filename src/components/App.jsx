@@ -11,7 +11,6 @@ function App() {
   const [isEditClicked, setIsEditClicked] = useState(false);
   const [clickedRowId, setClickedRowId] = useState();
   const clickedRowIdRef = useRef(1);
-  const [listDate, setListDate] = useState([]);
   const [totalPrice, setTotalPrice] = useState([]);
   const [multipleList, setMultipleList] = useState([]);
   const [pageNumber, setPageNumber] = useState(0);
@@ -135,7 +134,10 @@ function App() {
   }
 
   function handlePrice(event) {
-    let priceOption = document.getElementById("price-opt" + rowNumber);
+    let tempRowID = event.target.id;
+    tempRowID = tempRowID.substring(11);
+
+    let priceOption = document.getElementById("price-opt" + tempRowID);
     let selecedOpt = priceOption.value;
     let tempTotal = 0;
     if (selecedOpt === "total") {
@@ -147,7 +149,7 @@ function App() {
         tempTotal = quantity * event.target.value;
       }
     }
-    const totalValue = document.getElementById("total-price-" + rowNumber);
+    const totalValue = document.getElementById("total-price-" + tempRowID);
     totalValue.textContent = tempTotal;
     calculateTotalPrice();
   }
@@ -180,20 +182,10 @@ function App() {
   }
 
   function handleChange(event) {
-    // const defaultCheckbox = document.getElementById("item-checkbox-" + clickedRowId);
-    // if (defaultCheckbox) {
-    //   defaultCheckbox.checked = false;
-    // }
     let tempId = event.target.parentNode.parentNode.id;
     tempId = tempId.substring(4);
     setClickedRowId(parseFloat(tempId));
     setCheckedId(true);
-    // const checkbox = document.getElementById("item-checkbox-" + tempId);
-    // if (parseFloat(tempId) === rowNumber) {
-    //   checkbox.checked = true;
-    // } else {
-    //   checkbox.checked = false;
-    // }
   }
 
   useEffect(() => {
@@ -214,23 +206,33 @@ function App() {
     }
   }
 
+  const removeEmptyIndex = (index, array) => {
+    // Remove empty index from array
+    const updatedList = array.filter((item, i) => i !== index);
+    return updatedList;
+  };
+
   function removePage() {
     setItemListRow([]);
     setIsPageRemoved(true);
-    const tempArray = [...multipleList];
-    tempArray.splice(pageNumber, 1);
-    setMultipleList([...tempArray]);
-    if (tempArray.length - 1 > 0) {
-      if (tempArray.length - 1 > pageNumber) {
-        console.log("We are here");
-      } else if (tempArray.length - 1 === pageNumber) {
-        setPageNumber(pageNumber - 1)
-      } else {
-        setPageNumber(tempArray.length - 1)
-      }
-    } else {
-      setPageNumber(0);
-    }
+    // const tempArray = [...multipleList];
+    // tempArray[pageNumber] = [];
+    // setMultipleList([...tempArray]);
+
+    // const tempArray = [...multipleList];
+    // tempArray.splice(pageNumber, 1);
+    // setMultipleList([...tempArray]);
+    // if (tempArray.length - 1 > 0) {
+    // if (tempArray.length - 1 > pageNumber) {
+    // console.log("We are here");
+    // } else if (tempArray.length - 1 === pageNumber) {
+    // setPageNumber(pageNumber - 1)
+    // } else {
+    // setPageNumber(tempArray.length - 1)
+    // }
+    // } else {
+    // setPageNumber(0);
+    // }
   }
 
   function handleClear() {
@@ -253,41 +255,30 @@ function App() {
     removePage();
   }
 
-  function handleDateInput(event) {
-    const newDate = event.target.value;
-    setListDate([...listDate, newDate]);
-    console.log(listDate);
-    console.log(listDate[0]);
-  }
-
-  useEffect(() => {
-    console.log(listDate);
-  }, [listDate]);
-
   function handleNewList() {
     let currentPgeNum;
-    if (isPageRemoved === true) {
-      currentPgeNum = multipleList.length;
+    let updatedMultipleList = [...multipleList];
+    if (itemListRow.length === 0) {
+      // if (isPageRemoved === true) {
+      // eslint-disable-next-line
+      updatedMultipleList = removeEmptyIndex(pageNumber, multipleList);
+      currentPgeNum = updatedMultipleList.length;
+      // }
       setIsPageRemoved(false);
+    } else if (updatedMultipleList.length - 1 > pageNumber) {
+      currentPgeNum = updatedMultipleList.length;
     } else {
-      currentPgeNum = multipleList.length + 1;
+      currentPgeNum = updatedMultipleList.length + 1;
     }
 
-    if (multipleList.length > 0 && pageNumber !== multipleList.length) {
-      const tempArray = [...multipleList];
-      if (itemListRow.length > 0) {
-        tempArray[pageNumber] = itemListRow;
-        setMultipleList(tempArray);
-      }
-      // else {
-      // tempArray.splice(pageNumber, 1);
-      // setMultipleList(tempArray);
-      // }
-      setPageNumber(tempArray.length);
+    if ((isPageRemoved === true && itemListRow.length > 0) || (updatedMultipleList.length - 1 > pageNumber)) {
+      updatedMultipleList[pageNumber] = [...itemListRow];
+      setMultipleList([...updatedMultipleList]);
     } else {
-      setMultipleList([...multipleList, itemListRow]);
-      setPageNumber(currentPgeNum);
+      setMultipleList([...updatedMultipleList, itemListRow]);
     }
+    setPageNumber(currentPgeNum);
+
     setItemListRow([]);
     setRowNumber(1);
     setIsPreviousButtonDisabled(false);
@@ -313,14 +304,20 @@ function App() {
 
   function handlePrevious() {
     let currentPgeNum;
-    if (isPageRemoved === true) {
-      currentPgeNum = pageNumber;
+    let updatedMultipleList = [...multipleList];
+    if (isPageRemoved === true || itemListRow.length === 0) {
+      // if (itemListRow.length === 0) {
+      // eslint-disable-next-line
+      updatedMultipleList = removeEmptyIndex(pageNumber, multipleList);
+      setMultipleList([...updatedMultipleList]);
+      // }
+      currentPgeNum = pageNumber - 1;
       setIsPageRemoved(false);
     } else {
       currentPgeNum = pageNumber - 1;
     }
 
-    setItemListRow([...multipleList[currentPgeNum]]);
+    setItemListRow([...updatedMultipleList[currentPgeNum]]);
     setRowNumber(itemListRow.length);
     if (currentPgeNum >= 0) {
       setPageNumber(currentPgeNum);
@@ -332,9 +329,9 @@ function App() {
       setIsPreviousButtonDisabled(true);
     }
 
-    if (currentPgeNum < multipleList.length) {
+    if (currentPgeNum < updatedMultipleList.length) {
       if (itemListRow.length === 0) {
-        if (currentPgeNum === multipleList.length - 1) {
+        if (currentPgeNum === updatedMultipleList.length - 1) {
           setIsNextButtonDisabled(true);
           setIsNewListButtonDisabled(false);
         } else {
@@ -348,10 +345,9 @@ function App() {
     } else {
       setIsNextButtonDisabled(true);
     }
-    const tempArray = [...multipleList];
     if (itemListRow.length > 0) {
-      tempArray[pageNumber] = itemListRow;
-      setMultipleList([...tempArray]);
+      updatedMultipleList[pageNumber] = itemListRow;
+      setMultipleList([...updatedMultipleList]);
     }
     setItem("");
     setQuantity("");
@@ -363,24 +359,34 @@ function App() {
 
   function handleNext() {
     let currentPgeNum;
+    let updatedMultipleList = [...multipleList];
     if (isPageRemoved === true) {
-      currentPgeNum = pageNumber;
-      if (pageNumber < multipleList.length - 1) {
-        currentPgeNum++;
+      if (itemListRow.length === 0) {
+        // eslint-disable-next-line
+        updatedMultipleList = removeEmptyIndex(pageNumber, multipleList);
+        setMultipleList([...updatedMultipleList]);
+        currentPgeNum = pageNumber;
+      } else {
+        updatedMultipleList[pageNumber] = [...itemListRow];
+        setMultipleList([...updatedMultipleList]);
+        currentPgeNum = pageNumber + 1;
       }
+      // if (pageNumber < updatedMultipleList.length - 1) {
+      //   currentPgeNum++;
+      // }
       setIsPageRemoved(false);
     } else {
       currentPgeNum = pageNumber + 1;
     }
 
-    if (currentPgeNum === multipleList.length - 1) {
-      setItemListRow([...multipleList[currentPgeNum]]);
+    if (currentPgeNum === updatedMultipleList.length - 1) {
+      setItemListRow([...updatedMultipleList[currentPgeNum]]);
       setRowNumber(itemListRow.length);
       setPageNumber(currentPgeNum);
       setIsNextButtonDisabled(true);
       setIsNewListButtonDisabled(false);
-    } else if (currentPgeNum < multipleList.length) {
-      setItemListRow([...multipleList[currentPgeNum]]);
+    } else if (currentPgeNum < updatedMultipleList.length) {
+      setItemListRow([...updatedMultipleList[currentPgeNum]]);
       setRowNumber(itemListRow.length);
       setPageNumber(currentPgeNum);
       setIsNextButtonDisabled(false);
@@ -395,10 +401,9 @@ function App() {
       setIsPreviousButtonDisabled(true);
     }
 
-    const tempArray = [...multipleList];
     if (itemListRow.length > 0) {
-      tempArray[pageNumber] = itemListRow;
-      setMultipleList(tempArray);
+      updatedMultipleList[pageNumber] = itemListRow;
+      setMultipleList(updatedMultipleList);
     }
     setItem("");
     setQuantity("");
@@ -426,25 +431,14 @@ function App() {
         <caption className="tableName"><h2>Shopping List</h2></caption>
         <thead>
           <tr>
-            <th>
-              <input type="date" value={listDate.length > 0 ? listDate[0] : ""} onChange={handleDateInput} />
-            </th>
-            <th>Item</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
             <td>
               <button className="add-btn" onClick={addNewRow}>+</button>
               <div className="add-container">
                 {addErrorMsg}
               </div>
             </td>
-            <td><input className="item-name-input" type="text" onChange={handleItemChange} value={item} /></td>
-            <td>
+            <td colSpan="2"><input className="item-name-input" type="text" onChange={handleItemChange} value={item} /></td>
+            <td colSpan="2">
               <input className="number-of-items-input" type="text" onChange={handleQuantityChange} value={quantity} />
               <select name="unit-input" id="unit-input" onChange={handleUnit} value={unit}>
                 <option value="default">--</option>
@@ -454,6 +448,15 @@ function App() {
               </select>
             </td>
           </tr>
+          <tr>
+            <th></th>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
           {itemListRow.map(eachRow => eachRow)}
           <tr>
             <td colSpan="4">Sum:</td>
