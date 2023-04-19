@@ -25,33 +25,10 @@ table, th, td {
   padding: 10px 20px;
 }
 
-.add-container {
-  position: relative;
-}
-
-.add-btn {
-  /* background-color: white; */
-  border: none;
-  height: 30px;
-  width: 30px;
-  border-radius: 5px;
-  font-weight: bold;
-  font-size: 25px;
-}
-
 .add-error-msg {
-  width: 200px;
-  position: absolute;
-  bottom: 25px;
-  left: 30px;
-  background-color: rgb(255, 252, 252);
+  margin-top: 3px;
   color: red;
-  box-shadow: 2px 3px 10px rgba(0,0,0,0.3);
-  opacity: 0;
-}
-
-.add-container:active .add-error-msg {
-  opacity: 1
+  font-weight: bold;
 }
 
 .tableName {
@@ -76,4 +53,22 @@ table, th, td {
 
 button {
   cursor: pointer;
+}
+
+.number-of-items {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.unit {
+  display: inline-block;
+}
+
+.price-value {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.priceOpt-value {
+  display: inline-block;
 }

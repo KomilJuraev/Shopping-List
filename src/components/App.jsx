@@ -3,7 +3,9 @@ import React, { useEffect, useState, useRef } from "react";
 function App() {
   const [rowNumber, setRowNumber] = useState(1);
   const [itemListRow, setItemListRow] = useState([]);
-  const [addErrorMsg, setAddErrorMsg] = useState(<div className="add-error-msg">Fill out the existing fields</div>);
+  const [addErrorMsgItemInput, setAddErrorMsgItemInput] = useState("");
+  const [addErrorMsgQuantity, setAddErrorMsgQuantity] = useState("");
+  const [editErrorMsg, setEditErrorMsg] = useState("");
   const [item, setItem] = useState("");
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("--");
@@ -18,27 +20,28 @@ function App() {
   const [isPreviousButtonDisabled, setIsPreviousButtonDisabled] = useState(true);
   const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
   const [isPageRemoved, setIsPageRemoved] = useState(false);
+  const [price, setPrice] = useState("")
+  const [priceOption, setPriceOption] = useState("total")
+  const [totalItemCost, setTotalItemCost] = useState(0);
 
   function addNewRow() {
     if ((item !== undefined && item !== "") && (quantity !== undefined && quantity !== "") && (unit !== "--") && (isEditClicked === false)) {
-      setAddErrorMsg("");
+      setAddErrorMsgItemInput("");
+      setAddErrorMsgQuantity("");
       setItemListRow([...itemListRow,
       <tr key={rowNumber} id={"row-" + rowNumber}>
         <td><input className={"item-checkbox"} id={"item-checkbox-" + rowNumber} type="radio" name="item-checkbox" onChange={handleChange} /></td>
-        <td><p className={"item-name"} id={"item-name-" + rowNumber} type="text" onChange={handleItemChange}>{item}</p></td>
+        <td><p className={"item-name"} id={"item-name-" + rowNumber} type="text">{item}</p></td>
         <td>
-          <p className="number-of-items" id={"number-of-items-" + rowNumber} type="text" onChange={handleQuantityChange}>{quantity}</p>
-          <p name="unit" id={"unit-" + rowNumber}>{unit}</p>
+          <p className="number-of-items" id={"number-of-items-" + rowNumber} type="text">{quantity}</p>
+          <p className="unit" id={"unit-" + rowNumber}>{unit}</p>
         </td>
         <td>
-          <input id={"price-input-" + rowNumber} type="text" placeholder="price" onChange={handlePrice} />
-          <select name="price-opt" id={"price-opt" + rowNumber} onChange={handlePriceOption}>
-            <option value="total">total</option>
-            <option value="per-unit" >per-unit</option>
-          </select>
+          <p className="price-value" id={"price-input-" + rowNumber} type="text" placeholder="price">{"$ " + price}</p>
+          <p className="priceOpt-value" id={"price-opt-" + rowNumber}>{priceOption}</p>
         </td>
         <td>
-          <p className="TotalPrice" id={"total-price-" + rowNumber}>0</p>
+          <p className="TotalPrice" id={"total-price-" + rowNumber}>{"$ " + totalItemCost}</p>
         </td>
       </tr>
       ]);
@@ -47,25 +50,27 @@ function App() {
       setUnit("--");
       setRowNumber(rowNumber + 1);
       setIsNewListButtonDisabled(false);
-    } else if (isEditClicked === true) {
+      // calculateTotalPrice(totalItemCost);
+      setPrice("");
+      setPriceOption("total");
+    } else if ((item !== undefined && item !== "") && (quantity !== undefined && quantity !== "") && (unit !== "--") && (isEditClicked === true)) {
+      setAddErrorMsgItemInput("");
+      setAddErrorMsgQuantity("");
       var tempArr = [...itemListRow];
       tempArr[clickedRowId - 1] =
         <tr key={clickedRowId} id={"row-" + clickedRowId}>
           <td><input className={"item-checkbox"} id={"item-checkbox-" + clickedRowId} type="radio" name="item-checkbox" onChange={handleChange} /></td>
-          <td><p className={"item-name"} id={"item-name-" + clickedRowId} type="text" onChange={handleItemChange}>{item}</p></td>
+          <td><p className={"item-name"} id={"item-name-" + clickedRowId} type="text">{item}</p></td>
           <td>
-            <p className="number-of-items" id={"number-of-items-" + clickedRowId} type="text" onChange={handleQuantityChange}>{quantity}</p>
-            <p name="unit" id={"unit-" + clickedRowId}>{unit}</p>
+            <p className="number-of-items" id={"number-of-items-" + clickedRowId} type="text">{quantity}</p>
+            <p className="unit" id={"unit-" + clickedRowId}>{unit}</p>
           </td>
           <td>
-            <input id={"price-input-" + clickedRowId} type="text" placeholder="price" onChange={handlePrice} />
-            <select name="price-opt" id={"price-opt" + clickedRowId} onChange={handlePriceOption}>
-              <option value="total">total</option>
-              <option value="per-unit" >per-unit</option>
-            </select>
+            <p className="price-value" id={"price-input-" + clickedRowId} type="text" placeholder="price">{"$ " + price}</p>
+            <p className="priceOpt-value" id={"price-opt-" + clickedRowId}>{priceOption}</p>
           </td>
           <td>
-            <p className="TotalPrice" id={"total-price-" + clickedRowId}>0</p>
+            <p className="TotalPrice" id={"total-price-" + clickedRowId}>{"$ " + totalItemCost}</p>
           </td>
         </tr>
       const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
@@ -76,19 +81,30 @@ function App() {
       setItem("");
       setQuantity("");
       setUnit("--");
-      const defaultCheckbox = document.getElementById("item-checkbox-" + clickedRowId);
-      if (defaultCheckbox) {
-        defaultCheckbox.checked = true;
-      }
+      setClickedRowId();
+      setPrice("");
+      setPriceOption("total");
     } else {
-      setAddErrorMsg(<div key="errorMsg" className="add-error-msg">Fill out the existing fields</div>);
+      if (item === undefined || item === "") {
+        setAddErrorMsgItemInput("Fill out the mandatory input fields");
+      } else {
+        setAddErrorMsgItemInput("");
+      }
+
+      if ((quantity === undefined || quantity === "") || (unit === "--")) {
+        setAddErrorMsgQuantity("Fill out the mandatory input fields");
+      } else {
+        setAddErrorMsgQuantity("");
+      }
     }
+    setEditErrorMsg("");
   }
 
   useEffect(() => {
-    setAddErrorMsg("");
-    console.log(itemListRow);
     calculateTotalPrice();
+    if (itemListRow.length === 0) {
+      setIsNewListButtonDisabled(true);
+    }
   }, [itemListRow]);
 
   function handleItemChange(event) {
@@ -134,52 +150,68 @@ function App() {
   }
 
   function handlePrice(event) {
-    let tempRowID = event.target.id;
-    tempRowID = tempRowID.substring(11);
+    if (event !== false) {
+      if (event.target.value === "") {
 
-    let priceOption = document.getElementById("price-opt" + tempRowID);
-    let selecedOpt = priceOption.value;
-    let tempTotal = 0;
-    if (selecedOpt === "total") {
-      if (event.target.value !== "") {
-        tempTotal = event.target.value;
+      } else {
+        setPrice(event.target.value);
       }
-    } else if (selecedOpt === "per-unit") {
-      if (event.target.value !== "") {
-        tempTotal = quantity * event.target.value;
-      }
+      totalItemPrice(event.target.value, priceOption);
+    } else {
+      const clickedPrice = document.getElementById(`price-input-` + clickedRowId).innerText;
+      const clickedPriceVal = clickedPrice.replace("$ ", "");
+      setPrice(clickedPriceVal);
     }
-    const totalValue = document.getElementById("total-price-" + tempRowID);
-    totalValue.textContent = tempTotal;
-    calculateTotalPrice();
   }
+
+  useEffect(() => {
+    console.log("Price =======> " + price);
+  }, [price]);
 
   function handlePriceOption(event) {
-    const inputPriceVal = document.getElementById("price-input-" + rowNumber);
-    let temp = inputPriceVal.value;
-    let tempTotal = 0;
-    if (event.target.value === "total") {
-      if (temp !== "") {
-        tempTotal = temp;
-      }
-    } else if (event.target.value === "per-unit") {
-      if (temp !== "") {
-        tempTotal = quantity * temp;
-      }
+    if (event !== false) {
+      setPriceOption(event.target.value);
+      totalItemPrice(price.replace("$ ", ""), event.target.value);
+    } else {
+      const clickedPriceOpt = document.getElementById(`price-opt-` + clickedRowId).innerText;
+      setPriceOption(clickedPriceOpt);
     }
-    const totalValue = document.getElementById("total-price-" + rowNumber);
-    totalValue.textContent = tempTotal;
-    calculateTotalPrice();
   }
 
+  useEffect(() => {
+    console.log("Price =======> " + priceOption);
+  }, [priceOption]);
+
+  function totalItemPrice(itemPrice, priceType) {
+    let totalPrice;
+    if (itemPrice === "") {
+      totalPrice = 0;
+    } else if (priceType === "total") {
+      totalPrice = parseFloat(itemPrice);
+    }
+    else {
+      totalPrice = parseFloat(itemPrice) * quantity;
+    }
+    setTotalItemCost(totalPrice);
+  }
+
+  useEffect(() => {
+    console.log("Price =======> " + totalItemCost);
+  }, [totalItemCost]);
+
   function calculateTotalPrice() {
-    let totalPrice = 0;
+    let curntTotalPrice = 0;
     const totalPrices = document.querySelectorAll('.TotalPrice');
     totalPrices.forEach(price => {
-      totalPrice += parseFloat(price.textContent);
+      let eachPrice = price.textContent.replace("$ ", "")
+      curntTotalPrice += parseFloat(eachPrice);
     });
-    setTotalPrice(totalPrice);
+    setTotalPrice(curntTotalPrice);
   }
+
+  useEffect(() => {
+    console.log("Price =======> " + totalPrice);
+  }, [totalPrice]);
 
   function handleChange(event) {
     let tempId = event.target.parentNode.parentNode.id;
@@ -198,16 +230,22 @@ function App() {
   }, [clickedRowId]);
 
   function handleEdit() {
-    setIsEditClicked(true);
     if (checkedId === true) {
+      setIsEditClicked(true);
       handleItemChange(false);
       handleQuantityChange(false);
       handleUnit(false);
+      setEditErrorMsg("");
+      handlePrice(false);
+      handlePriceOption(false);
+    } else {
+      setEditErrorMsg("Item is not selected. Please select a radio button to edit.")
     }
+    setAddErrorMsgItemInput("");
+    setAddErrorMsgQuantity("");
   }
 
   const removeEmptyIndex = (index, array) => {
-    // Remove empty index from array
     const updatedList = array.filter((item, i) => i !== index);
     return updatedList;
   };
@@ -215,36 +253,27 @@ function App() {
   function removePage() {
     setItemListRow([]);
     setIsPageRemoved(true);
-    // const tempArray = [...multipleList];
-    // tempArray[pageNumber] = [];
-    // setMultipleList([...tempArray]);
-
-    // const tempArray = [...multipleList];
-    // tempArray.splice(pageNumber, 1);
-    // setMultipleList([...tempArray]);
-    // if (tempArray.length - 1 > 0) {
-    // if (tempArray.length - 1 > pageNumber) {
-    // console.log("We are here");
-    // } else if (tempArray.length - 1 === pageNumber) {
-    // setPageNumber(pageNumber - 1)
-    // } else {
-    // setPageNumber(tempArray.length - 1)
-    // }
-    // } else {
-    // setPageNumber(0);
-    // }
   }
 
   function handleClear() {
-    let tempItemList = [...itemListRow];
-    if (tempItemList.length > 1) {
-      tempItemList.splice(clickedRowId - 1, 1);
-      setItemListRow(tempItemList);
+    if (checkedId === true) {
+      let tempItemList = [...itemListRow];
+      if (tempItemList.length > 1) {
+        tempItemList.splice(clickedRowId - 1, 1);
+        setItemListRow(tempItemList);
+      } else {
+        removePage();
+      }
+      const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
+      checkbox.checked = false;
+      setEditErrorMsg("");
     } else {
-      removePage();
+      setEditErrorMsg("Item is not selected. Please select a radio button to remove.");
     }
-    const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
-    checkbox.checked = false;
+    setAddErrorMsgItemInput("");
+    setAddErrorMsgQuantity("");
+    setCheckedId(false);
+    setClickedRowId();
   }
 
   useEffect(() => {
@@ -253,17 +282,24 @@ function App() {
 
   function handleClearAll() {
     removePage();
+    setEditErrorMsg("");
+    setAddErrorMsgItemInput("");
+    setAddErrorMsgQuantity("");
+    setTotalPrice(0);
+    setCheckedId(false);
+    setClickedRowId();
   }
 
   function handleNewList() {
+    setEditErrorMsg("");
+    setAddErrorMsgItemInput("");
+    setAddErrorMsgQuantity("");
     let currentPgeNum;
     let updatedMultipleList = [...multipleList];
     if (itemListRow.length === 0) {
-      // if (isPageRemoved === true) {
       // eslint-disable-next-line
       updatedMultipleList = removeEmptyIndex(pageNumber, multipleList);
       currentPgeNum = updatedMultipleList.length;
-      // }
       setIsPageRemoved(false);
     } else if (updatedMultipleList.length - 1 > pageNumber) {
       currentPgeNum = updatedMultipleList.length;
@@ -294,23 +330,25 @@ function App() {
   }
 
   useEffect(() => {
+
+  }, [editErrorMsg, addErrorMsgItemInput, addErrorMsgQuantity]);
+
+  useEffect(() => {
     console.log("isNewListButto nDisabled" + isNewListButtonDisabled);
   }, [isNewListButtonDisabled]);
 
   useEffect(() => {
     console.log("MultiDim Array => " + multipleList);
-    calculateTotalPrice();
+    // calculateTotalPrice();
   }, [multipleList]);
 
   function handlePrevious() {
     let currentPgeNum;
     let updatedMultipleList = [...multipleList];
     if (isPageRemoved === true || itemListRow.length === 0) {
-      // if (itemListRow.length === 0) {
       // eslint-disable-next-line
       updatedMultipleList = removeEmptyIndex(pageNumber, multipleList);
       setMultipleList([...updatedMultipleList]);
-      // }
       currentPgeNum = pageNumber - 1;
       setIsPageRemoved(false);
     } else {
@@ -355,7 +393,14 @@ function App() {
     setClickedRowId();
     const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
     checkbox.checked = false;
+    setEditErrorMsg("");
+    setAddErrorMsgItemInput("");
+    setAddErrorMsgQuantity("");
   }
+
+  useEffect(() => {
+    console.log("isPreviousButtonEnabled => " + isPreviousButtonDisabled);
+  }, [isPreviousButtonDisabled]);
 
   function handleNext() {
     let currentPgeNum;
@@ -371,9 +416,6 @@ function App() {
         setMultipleList([...updatedMultipleList]);
         currentPgeNum = pageNumber + 1;
       }
-      // if (pageNumber < updatedMultipleList.length - 1) {
-      //   currentPgeNum++;
-      // }
       setIsPageRemoved(false);
     } else {
       currentPgeNum = pageNumber + 1;
@@ -411,11 +453,10 @@ function App() {
     setClickedRowId();
     const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
     checkbox.checked = false;
+    setEditErrorMsg("");
+    setAddErrorMsgItemInput("");
+    setAddErrorMsgQuantity("");
   }
-
-  useEffect(() => {
-    console.log("isPreviousButtonEnabled => " + isPreviousButtonDisabled);
-  }, [isPreviousButtonDisabled]);
 
   useEffect(() => {
     console.log("isNextButtonEnabled => " + isNextButtonDisabled);
@@ -431,14 +472,21 @@ function App() {
         <caption className="tableName"><h2>Shopping List</h2></caption>
         <thead>
           <tr>
-            <td>
+            <th>
               <button className="add-btn" onClick={addNewRow}>+</button>
-              <div className="add-container">
-                {addErrorMsg}
-              </div>
+            </th>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <input className="item-name-input" type="text" onChange={handleItemChange} value={item} />
+              <div className="add-error-msg">{addErrorMsgItemInput}</div>
             </td>
-            <td colSpan="2"><input className="item-name-input" type="text" onChange={handleItemChange} value={item} /></td>
-            <td colSpan="2">
+            <td>
               <input className="number-of-items-input" type="text" onChange={handleQuantityChange} value={quantity} />
               <select name="unit-input" id="unit-input" onChange={handleUnit} value={unit}>
                 <option value="default">--</option>
@@ -446,21 +494,22 @@ function App() {
                 <option value="pieces">pieces</option>
                 <option value="liters">liters</option>
               </select>
+              <div className="add-error-msg">{addErrorMsgQuantity}</div>
             </td>
-          </tr>
-          <tr>
-            <th></th>
-            <th>Item</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Total</th>
+            <td>
+              <input id={"price-input"} type="text" onChange={handlePrice} value={price} />
+              <select id="price-opt" onChange={handlePriceOption} value={priceOption}>
+                <option value="total">total</option>
+                <option value="per-unit" >per-unit</option>
+              </select>
+            </td>
           </tr>
         </thead>
         <tbody>
           {itemListRow.map(eachRow => eachRow)}
           <tr>
             <td colSpan="4">Sum:</td>
-            <td>{totalPrice}</td>
+            <td>{"$ " + totalPrice}</td>
           </tr>
         </tbody>
         <tfoot>
@@ -472,6 +521,7 @@ function App() {
               <button className="clear-btn footer-btn" onClick={handleClear}>Clear</button>
               <button className="clear-all-btn footer-btn" onClick={handleClearAll}>Clear All</button>
               <button className="next-btn footer-btn" onClick={handleNext} disabled={isNextButtonDisabled} >Next List</button>
+              <div className="add-error-msg">{editErrorMsg}</div>
             </td>
           </tr>
         </tfoot>
