@@ -398,9 +398,6 @@ function App() {
     setAddErrorMsgQuantity("");
   }
 
-  useEffect(() => {
-    console.log("isPreviousButtonEnabled => " + isPreviousButtonDisabled);
-  }, [isPreviousButtonDisabled]);
 
   function handleNext() {
     let currentPgeNum;
