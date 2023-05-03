@@ -1,82 +1,90 @@
 import React from "react";
 
-function addNewRow() {
-  if ((item !== undefined && item !== "") && (quantity !== undefined && quantity !== "") && (unit !== "--") && (isEditClicked === false)) {
-    setAddErrorMsgItemInput("");
-    setAddErrorMsgQuantity("");
-    setItemListRow([...itemListRow,
-    <tr key={rowNumber} id={"row-" + rowNumber}>
-      <td><input className={"item-checkbox"} id={"item-checkbox-" + rowNumber} type="radio" name="item-checkbox" onChange={handleChange} /></td>
-      <td><p className={"item-name"} id={"item-name-" + rowNumber} type="text">{item}</p></td>
-      <td>
-        <p className="number-of-items" id={"number-of-items-" + rowNumber} type="text">{quantity}</p>
-        <p className="unit" id={"unit-" + rowNumber}>{unit}</p>
-      </td>
-      <td>
-        <p className="price-value" id={"price-input-" + rowNumber} type="text" placeholder="price">{"$ " + price}</p>
-        <p className="priceOpt-value" id={"price-opt-" + rowNumber}>{priceOption}</p>
-      </td>
-      <td>
-        <p className="TotalPrice" id={"total-price-" + rowNumber}>{"$ " + totalItemCost}</p>
-      </td>
-    </tr>
-    ]);
-    setItem("");
-    setQuantity("");
-    setUnit("--");
-    setRowNumber(rowNumber + 1);
-    setIsNewListButtonDisabled(false);
-    // calculateTotalPrice(totalItemCost);
-    setPrice("");
-    setPriceOption("total");
-  } else if ((item !== undefined && item !== "") && (quantity !== undefined && quantity !== "") && (unit !== "--") && (isEditClicked === true)) {
-    setAddErrorMsgItemInput("");
-    setAddErrorMsgQuantity("");
-    var tempArr = [...itemListRow];
-    tempArr[clickedRowId - 1] =
-      <tr key={clickedRowId} id={"row-" + clickedRowId}>
-        <td><input className={"item-checkbox"} id={"item-checkbox-" + clickedRowId} type="radio" name="item-checkbox" onChange={handleChange} /></td>
-        <td><p className={"item-name"} id={"item-name-" + clickedRowId} type="text">{item}</p></td>
+
+function Add(props) {
+  function addNewRow() {
+    if ((props.item !== undefined && props.item !== "") && (props.quantity !== undefined && props.quantity !== "") && (props.unit !== "--") && (props.isEditClicked === false)) {
+      props.setAddErrorMsgItemInput("");
+      props.setAddErrorMsgQuantity("");
+      props.setItemListRow([...props.itemListRow,
+      <tr key={props.rowNumber} id={"row-" + props.rowNumber}>
+        <td><input className={"item-checkbox"} id={"item-checkbox-" + props.rowNumber} type="radio" name="item-checkbox" onChange={handleChange} /></td>
+        <td><p className={"item-name"} id={"item-name-" + props.rowNumber} type="text">{props.item}</p></td>
         <td>
-          <p className="number-of-items" id={"number-of-items-" + clickedRowId} type="text">{quantity}</p>
-          <p className="unit" id={"unit-" + clickedRowId}>{unit}</p>
+          <p className="number-of-items" id={"number-of-items-" + props.rowNumber} type="text">{props.quantity}</p>
+          <p className="unit" id={"unit-" + props.rowNumber}>{props.unit}</p>
         </td>
         <td>
-          <p className="price-value" id={"price-input-" + clickedRowId} type="text" placeholder="price">{"$ " + price}</p>
-          <p className="priceOpt-value" id={"price-opt-" + clickedRowId}>{priceOption}</p>
+          <p className="price-value" id={"price-input-" + props.rowNumber} type="text" placeholder="price">{"$ " + props.price}</p>
+          <p className="priceOpt-value" id={"price-opt-" + props.rowNumber}>{props.priceOption}</p>
         </td>
         <td>
-          <p className="TotalPrice" id={"total-price-" + clickedRowId}>{"$ " + totalItemCost}</p>
+          <p className="TotalPrice" id={"total-price-" + props.rowNumber}>{"$ " + props.totalItemCost}</p>
         </td>
       </tr>
-    const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
-    checkbox.checked = false;
-    setItemListRow(tempArr);
-    setIsEditClicked(false);
-    setCheckedId(false);
-    setItem("");
-    setQuantity("");
-    setUnit("--");
-    setClickedRowId();
-    setPrice("");
-    setPriceOption("total");
-  } else {
-    if (item === undefined || item === "") {
-      setAddErrorMsgItemInput("Fill out the mandatory input fields");
+      ]);
+      props.setItem("");
+      props.setQuantity("");
+      props.setUnit("--");
+      props.setRowNumber(props.rowNumber + 1);
+      props.setIsNewListButtonDisabled(false);
+      // calculateTotalPrice(totalItemCost);
+      props.setPrice("");
+      props.setPriceOption("total");
+    } else if ((props.item !== undefined && props.item !== "") && (props.quantity !== undefined && props.quantity !== "") && (props.unit !== "--") && (props.isEditClicked === true)) {
+      props.setAddErrorMsgItemInput("");
+      props.setAddErrorMsgQuantity("");
+      var tempArr = [...props.itemListRow];
+      tempArr[props.clickedRowId - 1] =
+        <tr key={props.clickedRowId} id={"row-" + props.clickedRowId}>
+          <td><input className={"item-checkbox"} id={"item-checkbox-" + props.clickedRowId} type="radio" name="item-checkbox" onChange={handleChange} /></td>
+          <td><p className={"item-name"} id={"item-name-" + props.clickedRowId} type="text">{props.item}</p></td>
+          <td>
+            <p className="number-of-items" id={"number-of-items-" + props.clickedRowId} type="text">{props.quantity}</p>
+            <p className="unit" id={"unit-" + props.clickedRowId}>{props.unit}</p>
+          </td>
+          <td>
+            <p className="price-value" id={"price-input-" + props.clickedRowId} type="text" placeholder="price">{"$ " + props.price}</p>
+            <p className="priceOpt-value" id={"price-opt-" + props.clickedRowId}>{props.priceOption}</p>
+          </td>
+          <td>
+            <p className="TotalPrice" id={"total-price-" + props.clickedRowId}>{"$ " + props.totalItemCost}</p>
+          </td>
+        </tr>
+      const checkbox = document.getElementById("item-checkbox-" + props.clickedRowId);
+      checkbox.checked = false;
+      props.setItemListRow(tempArr);
+      props.setIsEditClicked(false);
+      props.setCheckedId(false);
+      props.setItem("");
+      props.setQuantity("");
+      props.setUnit("--");
+      props.setClickedRowId();
+      props.setPrice("");
+      props.setPriceOption("total");
     } else {
-      setAddErrorMsgItemInput("");
-    }
+      if (props.item === undefined || props.item === "") {
+        props.setAddErrorMsgItemInput("Fill out the mandatory input fields");
+      } else {
+        props.setAddErrorMsgItemInput("");
+      }
 
-    if ((quantity === undefined || quantity === "") || (unit === "--")) {
-      setAddErrorMsgQuantity("Fill out the mandatory input fields");
-    } else {
-      setAddErrorMsgQuantity("");
+      if ((props.quantity === undefined || props.quantity === "") || (props.unit === "--")) {
+        props.setAddErrorMsgQuantity("Fill out the mandatory input fields");
+      } else {
+        props.setAddErrorMsgQuantity("");
+      }
     }
+    props.setEditErrorMsg("");
   }
-  setEditErrorMsg("");
-}
 
-function Add() {
+  function handleChange(event) {
+    let tempId = event.target.parentNode.parentNode.id;
+    tempId = tempId.substring(4);
+    props.setClickedRowId(parseFloat(tempId));
+    props.setCheckedId(true);
+  }
+
   return (
     <button className="add-btn" onClick={addNewRow}>+</button>
   );

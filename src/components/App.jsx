@@ -1,4 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
+import Add from "./Add";
+import Edit from "./Edit";
+import Clear from "./Clear";
+import ClearAll from "./ClearAll";
+import Previous from "./Previous";
+import Next from "./Next";
+import NewBtn from "./NewBtn";
+import FooterErrorMsg from "./FooterErrorMsg";
+import TotalPrice from "./TotalPrice";
+import ItemInput from "./ItemInput";
+import QuantityInput from "./QuantityInput";
+import PriceInput from "./PriceInput";
 
 function App() {
   const [rowNumber, setRowNumber] = useState(1);
@@ -23,89 +35,6 @@ function App() {
   const [price, setPrice] = useState("")
   const [priceOption, setPriceOption] = useState("total")
   const [totalItemCost, setTotalItemCost] = useState(0);
-
-  function addNewRow() {
-    if ((item !== undefined && item !== "") && (quantity !== undefined && quantity !== "") && (unit !== "--") && (isEditClicked === false)) {
-      setAddErrorMsgItemInput("");
-      setAddErrorMsgQuantity("");
-      setItemListRow([...itemListRow,
-      <tr key={rowNumber} id={"row-" + rowNumber}>
-        <td><input className={"item-checkbox"} id={"item-checkbox-" + rowNumber} type="radio" name="item-checkbox" onChange={handleChange} /></td>
-        <td><p className={"item-name"} id={"item-name-" + rowNumber} type="text">{item}</p></td>
-        <td>
-          <p className="number-of-items" id={"number-of-items-" + rowNumber} type="text">{quantity}</p>
-          <p className="unit" id={"unit-" + rowNumber}>{unit}</p>
-        </td>
-        <td>
-          <p className="price-value" id={"price-input-" + rowNumber} type="text" placeholder="price">{"$ " + price}</p>
-          <p className="priceOpt-value" id={"price-opt-" + rowNumber}>{priceOption}</p>
-        </td>
-        <td>
-          <p className="TotalPrice" id={"total-price-" + rowNumber}>{"$ " + totalItemCost}</p>
-        </td>
-      </tr>
-      ]);
-      setItem("");
-      setQuantity("");
-      setUnit("--");
-      setRowNumber(rowNumber + 1);
-      setIsNewListButtonDisabled(false);
-      // calculateTotalPrice(totalItemCost);
-      setPrice("");
-      setPriceOption("total");
-    } else if ((item !== undefined && item !== "") && (quantity !== undefined && quantity !== "") && (unit !== "--") && (isEditClicked === true)) {
-      setAddErrorMsgItemInput("");
-      setAddErrorMsgQuantity("");
-      var tempArr = [...itemListRow];
-      tempArr[clickedRowId - 1] =
-        <tr key={clickedRowId} id={"row-" + clickedRowId}>
-          <td><input className={"item-checkbox"} id={"item-checkbox-" + clickedRowId} type="radio" name="item-checkbox" onChange={handleChange} /></td>
-          <td><p className={"item-name"} id={"item-name-" + clickedRowId} type="text">{item}</p></td>
-          <td>
-            <p className="number-of-items" id={"number-of-items-" + clickedRowId} type="text">{quantity}</p>
-            <p className="unit" id={"unit-" + clickedRowId}>{unit}</p>
-          </td>
-          <td>
-            <p className="price-value" id={"price-input-" + clickedRowId} type="text" placeholder="price">{"$ " + price}</p>
-            <p className="priceOpt-value" id={"price-opt-" + clickedRowId}>{priceOption}</p>
-          </td>
-          <td>
-            <p className="TotalPrice" id={"total-price-" + clickedRowId}>{"$ " + totalItemCost}</p>
-          </td>
-        </tr>
-      const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
-      checkbox.checked = false;
-      setItemListRow(tempArr);
-      setIsEditClicked(false);
-      setCheckedId(false);
-      setItem("");
-      setQuantity("");
-      setUnit("--");
-      setClickedRowId();
-      setPrice("");
-      setPriceOption("total");
-    } else {
-      if (item === undefined || item === "") {
-        setAddErrorMsgItemInput("Fill out the mandatory input fields");
-      } else {
-        setAddErrorMsgItemInput("");
-      }
-
-      if ((quantity === undefined || quantity === "") || (unit === "--")) {
-        setAddErrorMsgQuantity("Fill out the mandatory input fields");
-      } else {
-        setAddErrorMsgQuantity("");
-      }
-    }
-    setEditErrorMsg("");
-  }
-
-  useEffect(() => {
-    calculateTotalPrice();
-    if (itemListRow.length === 0) {
-      setIsNewListButtonDisabled(true);
-    }
-  }, [itemListRow]);
 
   function handleItemChange(event) {
     if (event !== false) {
@@ -151,22 +80,17 @@ function App() {
 
   function handlePrice(event) {
     if (event !== false) {
-      if (event.target.value === "") {
-
-      } else {
-        setPrice(event.target.value);
-      }
+      setPrice(event.target.value);
       totalItemPrice(event.target.value, priceOption);
+      if (event.target.value === "") {
+        setPrice(0);
+      }
     } else {
       const clickedPrice = document.getElementById(`price-input-` + clickedRowId).innerText;
-      const clickedPriceVal = clickedPrice.replace("$ ", "");
+      const clickedPriceVal = clickedPrice.replace("$", "");
       setPrice(clickedPriceVal);
     }
   }
-
-  useEffect(() => {
-    console.log("Price =======> " + price);
-  }, [price]);
 
   function handlePriceOption(event) {
     if (event !== false) {
@@ -178,11 +102,8 @@ function App() {
     }
   }
 
-  useEffect(() => {
-    console.log("Price =======> " + priceOption);
-  }, [priceOption]);
-
   function totalItemPrice(itemPrice, priceType) {
+    itemPrice = itemPrice.trim();
     let totalPrice;
     if (itemPrice === "") {
       totalPrice = 0;
@@ -195,10 +116,6 @@ function App() {
     setTotalItemCost(totalPrice);
   }
 
-  useEffect(() => {
-    console.log("Price =======> " + totalItemCost);
-  }, [totalItemCost]);
-
   function calculateTotalPrice() {
     let curntTotalPrice = 0;
     const totalPrices = document.querySelectorAll('.TotalPrice');
@@ -210,15 +127,29 @@ function App() {
   }
 
   useEffect(() => {
+    calculateTotalPrice();
+    if (itemListRow.length === 0) {
+      setIsNewListButtonDisabled(true);
+    }
+  }, [itemListRow]);
+
+  useEffect(() => {
+    console.log("Price =======> " + price);
+  }, [price]);
+
+  useEffect(() => {
+    console.log("Price =======> " + priceOption);
+  }, [priceOption]);
+
+
+  useEffect(() => {
+    console.log("Price =======> " + totalItemCost);
+  }, [totalItemCost]);
+
+
+  useEffect(() => {
     console.log("Price =======> " + totalPrice);
   }, [totalPrice]);
-
-  function handleChange(event) {
-    let tempId = event.target.parentNode.parentNode.id;
-    tempId = tempId.substring(4);
-    setClickedRowId(parseFloat(tempId));
-    setCheckedId(true);
-  }
 
   useEffect(() => {
     console.log("current " + clickedRowId)
@@ -229,105 +160,9 @@ function App() {
     }
   }, [clickedRowId]);
 
-  function handleEdit() {
-    if (checkedId === true) {
-      setIsEditClicked(true);
-      handleItemChange(false);
-      handleQuantityChange(false);
-      handleUnit(false);
-      setEditErrorMsg("");
-      handlePrice(false);
-      handlePriceOption(false);
-    } else {
-      setEditErrorMsg("Item is not selected. Please select a radio button to edit.")
-    }
-    setAddErrorMsgItemInput("");
-    setAddErrorMsgQuantity("");
-  }
-
-  const removeEmptyIndex = (index, array) => {
-    const updatedList = array.filter((item, i) => i !== index);
-    return updatedList;
-  };
-
-  function removePage() {
-    setItemListRow([]);
-    setIsPageRemoved(true);
-  }
-
-  function handleClear() {
-    if (checkedId === true) {
-      let tempItemList = [...itemListRow];
-      if (tempItemList.length > 1) {
-        tempItemList.splice(clickedRowId - 1, 1);
-        setItemListRow(tempItemList);
-      } else {
-        removePage();
-      }
-      const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
-      checkbox.checked = false;
-      setEditErrorMsg("");
-    } else {
-      setEditErrorMsg("Item is not selected. Please select a radio button to remove.");
-    }
-    setAddErrorMsgItemInput("");
-    setAddErrorMsgQuantity("");
-    setCheckedId(false);
-    setClickedRowId();
-  }
-
   useEffect(() => {
     console.log("isPageRemoved ==> " + isPageRemoved);
   }, [isPageRemoved]);
-
-  function handleClearAll() {
-    removePage();
-    setEditErrorMsg("");
-    setAddErrorMsgItemInput("");
-    setAddErrorMsgQuantity("");
-    setTotalPrice(0);
-    setCheckedId(false);
-    setClickedRowId();
-  }
-
-  function handleNewList() {
-    setEditErrorMsg("");
-    setAddErrorMsgItemInput("");
-    setAddErrorMsgQuantity("");
-    let currentPgeNum;
-    let updatedMultipleList = [...multipleList];
-    if (itemListRow.length === 0) {
-      // eslint-disable-next-line
-      updatedMultipleList = removeEmptyIndex(pageNumber, multipleList);
-      currentPgeNum = updatedMultipleList.length;
-      setIsPageRemoved(false);
-    } else if (updatedMultipleList.length - 1 > pageNumber) {
-      currentPgeNum = updatedMultipleList.length;
-    } else {
-      currentPgeNum = updatedMultipleList.length + 1;
-    }
-
-    if ((isPageRemoved === true && itemListRow.length > 0) || (updatedMultipleList.length - 1 > pageNumber)) {
-      updatedMultipleList[pageNumber] = [...itemListRow];
-      setMultipleList([...updatedMultipleList]);
-    } else {
-      setMultipleList([...updatedMultipleList, itemListRow]);
-    }
-    setPageNumber(currentPgeNum);
-
-    setItemListRow([]);
-    setRowNumber(1);
-    setIsPreviousButtonDisabled(false);
-    setIsNextButtonDisabled(true);
-    setIsNewListButtonDisabled(true);
-    const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
-    checkbox.checked = false;
-    setIsEditClicked(false);
-    setCheckedId(false);
-    setItem("");
-    setQuantity("");
-    setUnit("--");
-  }
 
   useEffect(() => {
 
@@ -342,122 +177,13 @@ function App() {
     // calculateTotalPrice();
   }, [multipleList]);
 
-  function handlePrevious() {
-    let currentPgeNum;
-    let updatedMultipleList = [...multipleList];
-    if (isPageRemoved === true || itemListRow.length === 0) {
-      // eslint-disable-next-line
-      updatedMultipleList = removeEmptyIndex(pageNumber, multipleList);
-      setMultipleList([...updatedMultipleList]);
-      currentPgeNum = pageNumber - 1;
-      setIsPageRemoved(false);
-    } else {
-      currentPgeNum = pageNumber - 1;
-    }
-
-    setItemListRow([...updatedMultipleList[currentPgeNum]]);
-    setRowNumber(itemListRow.length);
-    if (currentPgeNum >= 0) {
-      setPageNumber(currentPgeNum);
-    }
-
-    if (currentPgeNum > 0) {
-      setIsPreviousButtonDisabled(false);
-    } else {
-      setIsPreviousButtonDisabled(true);
-    }
-
-    if (currentPgeNum < updatedMultipleList.length) {
-      if (itemListRow.length === 0) {
-        if (currentPgeNum === updatedMultipleList.length - 1) {
-          setIsNextButtonDisabled(true);
-          setIsNewListButtonDisabled(false);
-        } else {
-          setIsNextButtonDisabled(false);
-          setIsNewListButtonDisabled(false);
-        }
-      } else {
-        setIsNextButtonDisabled(false);
-        setIsNewListButtonDisabled(false);
-      }
-    } else {
-      setIsNextButtonDisabled(true);
-    }
-    if (itemListRow.length > 0) {
-      updatedMultipleList[pageNumber] = itemListRow;
-      setMultipleList([...updatedMultipleList]);
-    }
-    setItem("");
-    setQuantity("");
-    setUnit("--");
-    setClickedRowId();
-    const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
-    checkbox.checked = false;
-    setEditErrorMsg("");
-    setAddErrorMsgItemInput("");
-    setAddErrorMsgQuantity("");
-  }
-
-
-  function handleNext() {
-    let currentPgeNum;
-    let updatedMultipleList = [...multipleList];
-    if (isPageRemoved === true) {
-      if (itemListRow.length === 0) {
-        // eslint-disable-next-line
-        updatedMultipleList = removeEmptyIndex(pageNumber, multipleList);
-        setMultipleList([...updatedMultipleList]);
-        currentPgeNum = pageNumber;
-      } else {
-        updatedMultipleList[pageNumber] = [...itemListRow];
-        setMultipleList([...updatedMultipleList]);
-        currentPgeNum = pageNumber + 1;
-      }
-      setIsPageRemoved(false);
-    } else {
-      currentPgeNum = pageNumber + 1;
-    }
-
-    if (currentPgeNum === updatedMultipleList.length - 1) {
-      setItemListRow([...updatedMultipleList[currentPgeNum]]);
-      setRowNumber(itemListRow.length);
-      setPageNumber(currentPgeNum);
-      setIsNextButtonDisabled(true);
-      setIsNewListButtonDisabled(false);
-    } else if (currentPgeNum < updatedMultipleList.length) {
-      setItemListRow([...updatedMultipleList[currentPgeNum]]);
-      setRowNumber(itemListRow.length);
-      setPageNumber(currentPgeNum);
-      setIsNextButtonDisabled(false);
-      setIsNewListButtonDisabled(false);
-    } else {
-      setIsNextButtonDisabled(true);
-    }
-
-    if (currentPgeNum > 0) {
-      setIsPreviousButtonDisabled(false);
-    } else {
-      setIsPreviousButtonDisabled(true);
-    }
-
-    if (itemListRow.length > 0) {
-      updatedMultipleList[pageNumber] = itemListRow;
-      setMultipleList(updatedMultipleList);
-    }
-    setItem("");
-    setQuantity("");
-    setUnit("--");
-    setClickedRowId();
-    const checkbox = document.getElementById("item-checkbox-" + clickedRowId);
-    checkbox.checked = false;
-    setEditErrorMsg("");
-    setAddErrorMsgItemInput("");
-    setAddErrorMsgQuantity("");
-  }
-
   useEffect(() => {
     console.log("isNextButtonEnabled => " + isNextButtonDisabled);
   }, [isNextButtonDisabled]);
+
+  useEffect(() => {
+    console.log("isPreviousButtonDisabled => " + isPreviousButtonDisabled);
+  }, [isPreviousButtonDisabled])
 
   useEffect(() => {
     console.log("pageNumber ===> " + pageNumber);
@@ -470,7 +196,32 @@ function App() {
         <thead>
           <tr>
             <th>
-              <button className="add-btn" onClick={addNewRow}>+</button>
+              <Add
+                itemListRow={itemListRow}
+                setItemListRow={setItemListRow}
+                item={item}
+                setItem={setItem}
+                quantity={quantity}
+                setQuantity={setQuantity}
+                unit={unit}
+                setUnit={setUnit}
+                isEditClicked={isEditClicked}
+                setIsEditClicked={setIsEditClicked}
+                setAddErrorMsgItemInput={setAddErrorMsgItemInput}
+                setAddErrorMsgQuantity={setAddErrorMsgQuantity}
+                rowNumber={rowNumber}
+                setRowNumber={setRowNumber}
+                price={price}
+                setPrice={setPrice}
+                priceOption={priceOption}
+                setPriceOption={setPriceOption}
+                totalItemCost={totalItemCost}
+                setIsNewListButtonDisabled={setIsNewListButtonDisabled}
+                clickedRowId={clickedRowId}
+                setClickedRowId={setClickedRowId}
+                setCheckedId={setCheckedId}
+                setEditErrorMsg={setEditErrorMsg}
+              />
             </th>
             <th>Item</th>
             <th>Quantity</th>
@@ -479,46 +230,149 @@ function App() {
           </tr>
           <tr>
             <td></td>
-            <td>
-              <input className="item-name-input" type="text" onChange={handleItemChange} value={item} />
-              <div className="add-error-msg">{addErrorMsgItemInput}</div>
-            </td>
-            <td>
-              <input className="number-of-items-input" type="text" onChange={handleQuantityChange} value={quantity} />
-              <select name="unit-input" id="unit-input" onChange={handleUnit} value={unit}>
-                <option value="default">--</option>
-                <option value="lbs">lbs</option>
-                <option value="pieces">pieces</option>
-                <option value="liters">liters</option>
-              </select>
-              <div className="add-error-msg">{addErrorMsgQuantity}</div>
-            </td>
-            <td>
-              <input id={"price-input"} type="text" onChange={handlePrice} value={price} />
-              <select id="price-opt" onChange={handlePriceOption} value={priceOption}>
-                <option value="total">total</option>
-                <option value="per-unit" >per-unit</option>
-              </select>
-            </td>
+            <ItemInput
+              handleItemChange={handleItemChange}
+              item={item}
+              addErrorMsgItemInput={addErrorMsgItemInput}
+            />
+            <QuantityInput
+              handleQuantityChange={handleQuantityChange}
+              quantity={quantity}
+              handleUnit={handleUnit}
+              unit={unit}
+              addErrorMsgQuantity={addErrorMsgQuantity}
+            />
+            <PriceInput
+              price={price}
+              handlePrice={handlePrice}
+              priceOption={priceOption}
+              handlePriceOption={handlePriceOption}
+            />
           </tr>
         </thead>
         <tbody>
           {itemListRow.map(eachRow => eachRow)}
-          <tr>
-            <td colSpan="4">Sum:</td>
-            <td>{"$ " + totalPrice}</td>
-          </tr>
+          <TotalPrice totalPrice={totalPrice} />
         </tbody>
         <tfoot>
           <tr className="footer-section">
             <td className="footer-col" colSpan="5">
-              <button className="previous-btn footer-btn" onClick={handlePrevious} disabled={isPreviousButtonDisabled}>Previous List</button>
-              <button className="new-list-btn footer-btn" onClick={handleNewList} disabled={isNewListButtonDisabled}>New List</button>
-              <button className="edit-btn footer-btn" onClick={handleEdit}>Edit</button>
-              <button className="clear-btn footer-btn" onClick={handleClear}>Clear</button>
-              <button className="clear-all-btn footer-btn" onClick={handleClearAll}>Clear All</button>
-              <button className="next-btn footer-btn" onClick={handleNext} disabled={isNextButtonDisabled} >Next List</button>
-              <div className="add-error-msg">{editErrorMsg}</div>
+              <Previous
+                itemListRow={itemListRow}
+                setItemListRow={setItemListRow}
+                multipleList={multipleList}
+                setMultipleList={setMultipleList}
+                pageNumber={pageNumber}
+                setPageNumber={setPageNumber}
+                isPageRemoved={isPageRemoved}
+                setIsPageRemoved={setIsPageRemoved}
+                setRowNumber={setRowNumber}
+                isPreviousButtonDisabled={isPreviousButtonDisabled}
+                setIsPreviousButtonDisabled={setIsPreviousButtonDisabled}
+                setIsNextButtonDisabled={setIsNextButtonDisabled}
+                setIsNewListButtonDisabled={setIsNewListButtonDisabled}
+                setItem={setItem}
+                setQuantity={setQuantity}
+                setUnit={setUnit}
+                price={price}
+                priceOption={priceOption}
+                setPrice={setPrice}
+                setPriceOption={setPriceOption}
+                clickedRowId={clickedRowId}
+                setClickedRowId={setClickedRowId}
+                setEditErrorMsg={setEditErrorMsg}
+                setAddErrorMsgItemInput={setAddErrorMsgItemInput}
+                setAddErrorMsgQuantity={setAddErrorMsgQuantity}
+              />
+              <NewBtn
+                itemListRow={itemListRow}
+                setItemListRow={setItemListRow}
+                multipleList={multipleList}
+                setMultipleList={setMultipleList}
+                isPageRemoved={isPageRemoved}
+                setIsPageRemoved={setIsPageRemoved}
+                pageNumber={pageNumber}
+                setPageNumber={setPageNumber}
+                clickedRowId={clickedRowId}
+                setClickedRowId={setClickedRowId}
+                isNewListButtonDisabled={isNewListButtonDisabled}
+                setIsNewListButtonDisabled={setIsNewListButtonDisabled}
+                setEditErrorMsg={setEditErrorMsg}
+                setAddErrorMsgItemInput={setAddErrorMsgItemInput}
+                setAddErrorMsgQuantity={setAddErrorMsgQuantity}
+                setRowNumber={setRowNumber}
+                setIsPreviousButtonDisabled={setIsPreviousButtonDisabled}
+                setIsNextButtonDisabled={setIsNextButtonDisabled}
+                setIsEditClicked={setIsEditClicked}
+                setCheckedId={setCheckedId}
+                setItem={setItem}
+                setUnit={setUnit}
+                setQuantity={setQuantity}
+                price={price}
+                priceOption={priceOption}
+                setPrice={setPrice}
+                setPriceOption={setPriceOption}
+              />
+              <Edit
+                checkedId={checkedId}
+                setIsEditClicked={setIsEditClicked}
+                handleItemChange={handleItemChange}
+                handleQuantityChange={handleQuantityChange}
+                handleUnit={handleUnit}
+                setEditErrorMsg={setEditErrorMsg}
+                handlePrice={handlePrice}
+                handlePriceOption={handlePriceOption}
+                setAddErrorMsgItemInput={setAddErrorMsgItemInput}
+                setAddErrorMsgQuantity={setAddErrorMsgQuantity}
+              />
+              <Clear
+                itemListRow={itemListRow}
+                setItemListRow={setItemListRow}
+                checkedId={checkedId}
+                setCheckedId={setCheckedId}
+                clickedRowId={clickedRowId}
+                setClickedRowId={setClickedRowId}
+                setIsPageRemoved={setIsPageRemoved}
+                setEditErrorMsg={setEditErrorMsg}
+                setAddErrorMsgItemInput={setAddErrorMsgItemInput}
+                setAddErrorMsgQuantity={setAddErrorMsgQuantity}
+              />
+              <ClearAll
+                setItemListRow={setItemListRow}
+                setIsPageRemoved={setIsPageRemoved}
+                setEditErrorMsg={setEditErrorMsg}
+                setAddErrorMsgItemInput={setAddErrorMsgItemInput}
+                setAddErrorMsgQuantity={setAddErrorMsgQuantity}
+                setTotalPrice={setTotalPrice}
+                setCheckedId={setCheckedId}
+                setClickedRowId={setClickedRowId}
+              />
+              <Next
+                multipleList={multipleList}
+                setMultipleList={setMultipleList}
+                itemListRow={itemListRow}
+                setItemListRow={setItemListRow}
+                isPageRemoved={isPageRemoved}
+                setIsPageRemoved={setIsPageRemoved}
+                pageNumber={pageNumber}
+                setPageNumber={setPageNumber}
+                setRowNumber={setRowNumber}
+                isNextButtonDisabled={isNextButtonDisabled}
+                setIsNextButtonDisabled={setIsNextButtonDisabled}
+                setIsNewListButtonDisabled={setIsNewListButtonDisabled}
+                setIsPreviousButtonDisabled={setIsPreviousButtonDisabled}
+                setItem={setItem}
+                setQuantity={setQuantity}
+                setUnit={setUnit}
+                setPrice={setPrice}
+                setPriceOption={setPriceOption}
+                clickedRowId={clickedRowId}
+                setClickedRowId={setClickedRowId}
+                setEditErrorMsg={setEditErrorMsg}
+                setAddErrorMsgItemInput={setAddErrorMsgItemInput}
+                setAddErrorMsgQuantity={setAddErrorMsgQuantity}
+              />
+              <FooterErrorMsg editErrorMsg={editErrorMsg} />
             </td>
           </tr>
         </tfoot>
