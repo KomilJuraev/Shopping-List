@@ -51,8 +51,10 @@ function Add(props) {
             <p className="TotalPrice" id={"total-price-" + props.clickedRowId}>{"$ " + props.totalItemCost}</p>
           </td>
         </tr>
-      const checkbox = document.getElementById("item-checkbox-" + props.clickedRowId);
-      checkbox.checked = false;
+      if (props.clickedRowId !== undefined) {
+        const checkbox = document.getElementById("item-checkbox-" + props.clickedRowId);
+        checkbox.checked = false;
+      }
       props.setItemListRow(tempArr);
       props.setIsEditClicked(false);
       props.setCheckedId(false);

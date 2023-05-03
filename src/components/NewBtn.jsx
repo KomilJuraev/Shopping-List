@@ -50,8 +50,10 @@ function NewBtn(props) {
     props.setPrice("")
     props.setPriceOption("total");
     props.setClickedRowId();
-    const checkbox = document.getElementById("item-checkbox-" + props.clickedRowId);
-    checkbox.checked = false;
+    if (props.clickedRowId !== undefined) {
+      const checkbox = document.getElementById("item-checkbox-" + props.clickedRowId);
+      checkbox.checked = false;
+    }
   }
 
   useEffect(() => {

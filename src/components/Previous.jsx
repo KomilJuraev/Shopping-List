@@ -61,8 +61,11 @@ function Previous(props) {
     props.setEditErrorMsg("");
     props.setAddErrorMsgItemInput("");
     props.setAddErrorMsgQuantity("");
-    const checkbox = document.getElementById("item-checkbox-" + props.clickedRowId);
-    checkbox.checked = false;
+    props.setCheckedId(false);
+    if (props.clickedRowId !== undefined) {
+      const checkbox = document.getElementById("item-checkbox-" + props.clickedRowId);
+      checkbox.checked = false;
+    }
   }
 
   useEffect(() => {

@@ -43,9 +43,11 @@ function App() {
       if (event !== false) {
         setItem(event.target.value);
       } else {
-        const itemNameInput = document.getElementById(`item-name-` + clickedRowId);
-        const itemName = itemNameInput.innerText;
-        setItem(itemName);
+        if (clickedRowId !== undefined) {
+          const itemNameInput = document.getElementById(`item-name-` + clickedRowId);
+          const itemName = itemNameInput.innerText;
+          setItem(itemName);
+        }
       }
     }
   }
@@ -57,9 +59,11 @@ function App() {
       if (event !== false) {
         setQuantity(event.target.value);
       } else {
-        const itemNameInput = document.getElementById(`number-of-items-` + clickedRowId);
-        const itemName = itemNameInput.innerText;
-        setQuantity(itemName);
+        if (clickedRowId !== undefined) {
+          const itemNameInput = document.getElementById(`number-of-items-` + clickedRowId);
+          const itemName = itemNameInput.innerText;
+          setQuantity(itemName);
+        }
       }
     }
   }
@@ -71,9 +75,11 @@ function App() {
       if (event !== false) {
         setUnit(event.target.value);
       } else {
-        const unitInput = document.getElementById(`unit-` + clickedRowId);
-        const currentUnit = unitInput.innerText;
-        setUnit(currentUnit);
+        if (clickedRowId !== undefined) {
+          const unitInput = document.getElementById(`unit-` + clickedRowId);
+          const currentUnit = unitInput.innerText;
+          setUnit(currentUnit);
+        }
       }
     }
   }
@@ -86,9 +92,11 @@ function App() {
         setPrice(0);
       }
     } else {
-      const clickedPrice = document.getElementById(`price-input-` + clickedRowId).innerText;
-      const clickedPriceVal = clickedPrice.replace("$", "");
-      setPrice(clickedPriceVal);
+      if (clickedRowId !== undefined) {
+        const clickedPrice = document.getElementById(`price-input-` + clickedRowId).innerText;
+        const clickedPriceVal = clickedPrice.replace("$", "");
+        setPrice(clickedPriceVal);
+      }
     }
   }
 
@@ -97,8 +105,10 @@ function App() {
       setPriceOption(event.target.value);
       totalItemPrice(price.replace("$ ", ""), event.target.value);
     } else {
-      const clickedPriceOpt = document.getElementById(`price-opt-` + clickedRowId).innerText;
-      setPriceOption(clickedPriceOpt);
+      if (clickedRowId !== undefined) {
+        const clickedPriceOpt = document.getElementById(`price-opt-` + clickedRowId).innerText;
+        setPriceOption(clickedPriceOpt);
+      }
     }
   }
 
@@ -283,6 +293,7 @@ function App() {
                 setEditErrorMsg={setEditErrorMsg}
                 setAddErrorMsgItemInput={setAddErrorMsgItemInput}
                 setAddErrorMsgQuantity={setAddErrorMsgQuantity}
+                setCheckedId={setCheckedId}
               />
               <NewBtn
                 itemListRow={itemListRow}
@@ -371,6 +382,7 @@ function App() {
                 setEditErrorMsg={setEditErrorMsg}
                 setAddErrorMsgItemInput={setAddErrorMsgItemInput}
                 setAddErrorMsgQuantity={setAddErrorMsgQuantity}
+                setCheckedId={setCheckedId}
               />
               <FooterErrorMsg editErrorMsg={editErrorMsg} />
             </td>

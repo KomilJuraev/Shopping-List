@@ -12,9 +12,11 @@ function Clear(props) {
       } else {
         removePage(props);
       }
-      const checkbox = document.getElementById("item-checkbox-" + props.clickedRowId);
-      checkbox.checked = false;
-      props.setEditErrorMsg("");
+      if (props.clickedRowId !== undefined) {
+        const checkbox = document.getElementById("item-checkbox-" + props.clickedRowId);
+        checkbox.checked = false;
+        props.setEditErrorMsg("");
+      }
     } else {
       props.setEditErrorMsg("Item is not selected. Please select a radio button to remove.");
     }
